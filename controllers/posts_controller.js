@@ -16,7 +16,7 @@ function index(req, res) {
 function show(req, res) {
     const id = Number(req.params.id)
 
-    const sql = `SELECT * FROM posts WHERE posts . id = ${id}`
+    const sql = `SELECT posts.title, posts.id, posts.content, posts.image, GROUP_CONCAT(tags.label ORDER BY tags.label SEPARATOR ', ') AS tags FROM posts JOIN post_tag ON post_tag.post_id = posts.id JOIN tags ON tags.id = post_tag.tag_id WHERE posts.id = ${id} GROUP BY posts.title, posts.id, posts.content, posts.image;`
 
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: err })
@@ -24,6 +24,9 @@ function show(req, res) {
         res.json(results)
     })
 }
+
+
+
 
 function store(req, res) {
 
