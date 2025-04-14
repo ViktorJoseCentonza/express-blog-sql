@@ -14,97 +14,38 @@ function index(req, res) {
 }
 
 function show(req, res) {
-    const postSlug = req.params.slug
-    const singlePost = posts_data.find(post => post.slug === postSlug)
+    const id = Number(req.params.id)
 
-    if (!singlePost) {
-        return res.status(404).json({
-            error: '404 not found',
-            message: 'Post not found'
-        })
-    }
+    const sql = `SELECT * FROM posts WHERE posts . id = ${id}`
 
-    res.json(singlePost)
+    connection.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: err })
+        console.log(results)
+        res.json(results)
+    })
 }
 
 function store(req, res) {
-    const slug = slugify(req.body.title)
-    const slugCheck = posts_data.find(post => post.slug === slug);
-    console.log(slugCheck)
 
-    if (slugCheck) {
-        res.status(404);
-        return res.json({
-            error: "slug already present",
-            message: "slug repetition detected"
-        })
-    }
-
-    const newPost = {
-        title: req.body.title,
-        slug: slug,
-        content: req.body.content,
-        image: req.body.image,
-        tags: req.body.tags,
-    }
-    posts_data.push(newPost);
-    console.log(posts_data)
-
-    res.status(201);
-    res.json(newPost);
 }
 
 function update(req, res) {
-    const slug = req.params.slug
 
-    const post = posts_data.find(post => post.slug === slug);
-
-    if (!post) {
-        res.status(404);
-        return res.json({
-            error: "Not Found",
-            message: "post non trovato"
-        })
-    }
-
-    post.title = req.body.title
-    post.slug = slug
-    post.content = req.body.content
-    post.image = req.body.image
-    post.tags = req.body.tags
-    console.log(posts_data)
-
-    res.json(post);
 }
 
 function modify(req, res) {
-    const postSlug = req.params.slug
-    res.send(`edit post with slug: ${postSlug}`)
+
 }
 
 function destroy(req, res) {
-    const postSlug = req.params.slug
-    // console.log(posts_data.indexOf(postSlug))
-    // posts_data.splice(posts_data.indexOf(postSlug), 1)
+    const id = Number(req.params.id)
+    const sql = `DELETE FROM posts WHERE posts . id = ${id}`
 
-    const postIndex = posts_data.findIndex(post => post.slug == postSlug);
-    console.log(postIndex)
-    if (postIndex === -1) {
-        res.status(404).json({
-            error: '404 not found',
-            message: 'Post not found'
-        })
-    } else {
-        posts_data.splice(postIndex, 1)
-        console.log(posts_data)
-        console.log(`post ${postIndex} deleted!`)
-        res.status(204).json(
-            {
-                message: 'Success!'
-            }
-        )
-    }
-
+    connection.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: err })
+        console.log(results)
+        res.sendStatus(204)
+    })
 }
 
 module.exports = {
