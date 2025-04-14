@@ -20,6 +20,8 @@ function show(req, res) {
 
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: err })
+        else if (results[0] == null) return res.status(500).json({ error: 'notFound' })
+        results[0].tags = results[0].tags.split(',')
         console.log(results)
         res.json(results)
     })
