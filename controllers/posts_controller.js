@@ -1,27 +1,15 @@
-const posts_data = require('../data/posts_data')
-
-const slugify = str =>
-    str
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[\s_-]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+const connection = require('../data/db')
 
 
-function tagFilter(req, res) {
-    let filteredPosts = posts_data
-    if (req.query.tags) {
-        filteredPosts = posts_data.filter(post => post.tags.includes(req.query.tags))
-    }
-    if (filteredPosts == '') {
-        res.status(404).json({
-            error: '404 not found',
-            message: 'no post with those tags was found!'
-        })
-    } else {
-        res.json(filteredPosts);
-    }
+function index(req, res) {
+
+    const sql = 'SELECT * FROM posts'
+
+    connection.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: err })
+        console.log(results)
+        res.json(results)
+    })
 
 }
 
@@ -110,7 +98,6 @@ function destroy(req, res) {
         posts_data.splice(postIndex, 1)
         console.log(posts_data)
         console.log(`post ${postIndex} deleted!`)
-        // res.send("vaffanculo")
         res.status(204).json(
             {
                 message: 'Success!'
@@ -121,8 +108,8 @@ function destroy(req, res) {
 }
 
 module.exports = {
+    index,
     show,
-    tagFilter,
     store,
     update,
     modify,
